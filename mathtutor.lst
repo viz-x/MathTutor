@@ -1,0 +1,210 @@
+0010 // MATH TUTOR - COMAL-80
+0020 // A classroom arithmetic practice program
+0030 // Compatible with C64/BBC/CP/M COMAL-80
+0040 //
+0050 // VARIABLE GLOSSARY:
+0060 // mode%      - Selected operation (1-5)
+0070 // correct%   - Number of correct answers
+0080 // total%     - Total questions asked
+0090 // num1%, num2% - Random numbers for problem
+0100 // answer%    - User's answer
+0110 // result%    - Correct answer
+0120 // maxval%    - Maximum value for random numbers
+0130 // quit$      - Continue/quit flag
+0140 //
+0150 // ================================================
+0160 // MAIN PROGRAM
+0170 // ================================================
+0180 //
+0190 PROC initialize
+0200 //
+0210 REPEAT
+0220   PROC show_menu
+0230   INPUT "YOUR CHOICE: ":mode%
+0240   PRINT
+0250   //
+0260   IF mode%>=1 AND mode%<=4 THEN
+0270     PROC run_session(mode%)
+0280   ELIF mode%=5 THEN
+0290     PRINT "THANKS FOR PRACTICING!"
+0300     PRINT "GOODBYE!"
+0310   ELSE
+0320     PRINT "INVALID CHOICE. TRY AGAIN."
+0330     PRINT
+0340   ENDIF
+0350   //
+0360 UNTIL mode%=5
+0370 //
+0380 END
+0390 //
+0400 // ================================================
+0410 // INITIALIZATION PROCEDURE
+0420 // ================================================
+0430 //
+0440 PROC initialize
+0450   RANDOMIZE  // Seed random number generator
+0460   correct%:=0
+0470   total%:=0
+0480 ENDPROC initialize
+0490 //
+0500 // ================================================
+0510 // MENU DISPLAY PROCEDURE
+0520 // ================================================
+0530 //
+0540 PROC show_menu
+0550   PRINT
+0560   PRINT "================================"
+0570   PRINT "      M A T H   T U T O R      "
+0580   PRINT "================================"
+0590   PRINT
+0600   PRINT "SELECT AN OPERATION:"
+0610   PRINT
+0620   PRINT "  1 - ADDITION"
+0630   PRINT "  2 - SUBTRACTION"
+0640   PRINT "  3 - MULTIPLICATION"
+0650   PRINT "  4 - DIVISION"
+0660   PRINT "  5 - QUIT"
+0670   PRINT
+0680 ENDPROC show_menu
+0690 //
+0700 // ================================================
+0710 // PRACTICE SESSION PROCEDURE
+0720 // ================================================
+0730 //
+0740 PROC run_session(mode%)
+0750   correct%:=0
+0760   total%:=0
+0770   maxval%:=10  // Start with easy numbers
+0780   //
+0790   PRINT "ANSWER 10 PROBLEMS"
+0800   PRINT
+0810   //
+0820   FOR question%:=1 TO 10 DO
+0830     PRINT "QUESTION ";question%;":"
+0840     //
+0850     // Generate random numbers
+0860     num1%:=RND(maxval%)+1
+0870     num2%:=RND(maxval%)+1
+0880     //
+0890     // For subtraction, ensure positive result
+0900     IF mode%=2 AND num2%>num1% THEN
+0910       temp%:=num1%
+0920       num1%:=num2%
+0930       num2%:=temp%
+0940     ENDIF
+0950     //
+0960     // For division, ensure even division
+0970     IF mode%=4 THEN
+0980       result%:=RND(maxval%)+1
+0990       num1%:=result%*num2%  // Make num1 divisible
+1000     ENDIF
+1010     //
+1020     // Display problem and get answer
+1030     PROC ask_question(mode%,num1%,num2%)
+1040     INPUT "YOUR ANSWER: ":answer%
+1050     //
+1060     // Calculate correct result
+1070     PROC calculate_result(mode%,num1%,num2%)
+1080     //
+1090     // Check answer
+1100     total%:=total%+1
+1110     IF answer%=result% THEN
+1120       correct%:=correct%+1
+1130       PROC praise
+1140     ELSE
+1150       PRINT "INCORRECT. THE ANSWER IS ";result%
+1160     ENDIF
+1170     PRINT
+1180     //
+1190     // Increase difficulty after 3 correct
+1200     IF correct%>=3 AND maxval%<25 THEN
+1210       maxval%:=maxval%+5
+1220     ENDIF
+1230   ENDFOR question%
+1240   //
+1250   PROC show_score
+1260   PRINT
+1270 ENDPROC run_session
+1280 //
+1290 // ================================================
+1300 // ASK QUESTION PROCEDURE
+1310 // ================================================
+1320 //
+1330 PROC ask_question(mode%,num1%,num2%)
+1340   IF mode%=1 THEN
+1350     PRINT num1%;" + ";num2%;" = ?"
+1360   ELIF mode%=2 THEN
+1370     PRINT num1%;" - ";num2%;" = ?"
+1380   ELIF mode%=3 THEN
+1390     PRINT num1%;" X ";num2%;" = ?"
+1400   ELIF mode%=4 THEN
+1410     PRINT num1%;" / ";num2%;" = ?"
+1420   ENDIF
+1430 ENDPROC ask_question
+1440 //
+1450 // ================================================
+1460 // CALCULATE RESULT PROCEDURE
+1470 // ================================================
+1480 //
+1490 PROC calculate_result(mode%,num1%,num2%)
+1500   IF mode%=1 THEN
+1510     result%:=num1%+num2%
+1520   ELIF mode%=2 THEN
+1530     result%:=num1%-num2%
+1540   ELIF mode%=3 THEN
+1550     result%:=num1%*num2%
+1560   ELIF mode%=4 THEN
+1570     result%:=num1%/num2%
+1580   ENDIF
+1590 ENDPROC calculate_result
+1600 //
+1610 // ================================================
+1620 // PRAISE PROCEDURE - Random encouragement
+1630 // ================================================
+1640 //
+1650 PROC praise
+1660   choice%:=RND(5)+1
+1670   IF choice%=1 THEN
+1680     PRINT "CORRECT!"
+1690   ELIF choice%=2 THEN
+1700     PRINT "EXCELLENT!"
+1710   ELIF choice%=3 THEN
+1720     PRINT "WELL DONE!"
+1730   ELIF choice%=4 THEN
+1740     PRINT "GREAT JOB!"
+1750   ELSE
+1760     PRINT "PERFECT!"
+1770   ENDIF
+1780 ENDPROC praise
+1790 //
+1800 // ================================================
+1810 // SCORE DISPLAY PROCEDURE
+1820 // ================================================
+1830 //
+1840 PROC show_score
+1850   PRINT "================================"
+1860   PRINT "      FINAL SCORE REPORT       "
+1870   PRINT "================================"
+1880   PRINT
+1890   PRINT "YOU ANSWERED ";correct%;" OUT OF ";total%
+1900   //
+1910   // Calculate percentage
+1920   IF total%>0 THEN
+1930     percent%:=(correct%*100) DIV total%
+1940     PRINT "PERCENTAGE: ";percent%;"%"
+1950     PRINT
+1960     //
+1970     // Performance feedback
+1980     IF percent%=100 THEN
+1990       PRINT "OUTSTANDING! PERFECT SCORE!"
+2000     ELIF percent%>=80 THEN
+2010       PRINT "VERY GOOD! KEEP IT UP!"
+2020     ELIF percent%>=60 THEN
+2030       PRINT "GOOD WORK! PRACTICE MORE!"
+2040     ELSE
+2050       PRINT "KEEP PRACTICING!"
+2060     ENDIF
+2070   ENDIF
+2080   PRINT
+2090   PRINT "================================"
+2100 ENDPROC show_score
